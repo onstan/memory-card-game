@@ -1,24 +1,24 @@
 (() => document.addEventListener('DOMContentLoaded', () => {
   const vertical = document.getElementById('vertical-number');
   const horizontal = document.getElementById('horizontal-number');
-  const startButton = document.getElementById('start-btn'); // по клику на странице появится нужное к-во карточек
+  const startButton = document.getElementById('start-btn'); // cards appean when button is clicked
 
   let pairs;
   let timerDisplay;
   let seconds;
   let timer;
 
-  let flipped = false; // пользователь ещё не перевернул ни одной карты
-  let firstCard, secondCard; // первая и вторая открытые карточки
+  let flipped = false; // the user hasn't flipped any cards yet
+  let firstCard, secondCard; // first and second open cards
 
   let gameboard;
   let foundPairs = 0;
-  let firstMove = false; // пользователь еще не начал игру (эта переменная позволит запустить таймер)
+  let firstMove = false; // the game hasn't started yet (we will set the timer using this variable)
 
-  let cardsArray = []; // массив карточек
-  let frontFace = []; // массив лицевых сторон карточек, на которых будет написано число
+  let cardsArray = [];
+  let frontFace = []; // array of cards' front faces that will hold a number
 
-  // добавляем слушатели на поля ввода, чтобы можно было вводить только четные числа
+  // adding event listeners to inputs to prevent entering odd numbers
   [vertical, horizontal].forEach(input => {
     input.addEventListener('input', () => {
       setTimeout(() => {
@@ -30,18 +30,18 @@
     })
   });
 
-  // добавляем слушатель на кнопку, котрая запустит игру
+  // add event listener to the button that will start the game
   startButton.addEventListener('click', (e) => {
     e.preventDefault();
-    if (vertical.value === "" || horizontal.value === "") return //игра не начнется если поля с числами пустые
-    if (vertical.value % 2 !== 0 || horizontal.value % 2 !== 0) return //игра не начнется если пользователь успел
-    //ввести нечетные числа
+    if (vertical.value === "" || horizontal.value === "") return //the game won't start if fields are empty
+    if (vertical.value % 2 !== 0 || horizontal.value % 2 !== 0) return //the game won't start if the user somehow
+    //managed to enter odd number
     if ((horizontal.value > 10 || horizontal.value < 2) || (vertical.value > 10 || vertical.value < 2)) return
-    // игра не начнется если пользователь успел ввести число вне указанного диапазона
+    // the game won't start if the user somehow entered numbers that are out of range
     else startGame();
   });
 
-  // внешний вид таймера
+  // how the timer looks
   function createTimerItem() {
     const timerItem = document.createElement('div');
     timerItem.classList.add('mt-3', 'align-self-center', 'bg-light', 'p-3');
@@ -51,24 +51,25 @@
 
   function startGame() {
     if (gameboard) {
-      resetGame(); // если на экране уже есть карточки, необходимо сбросить игру
+      resetGame(); // we need to reset the game if there are cards on the page
     }
 
-    // после сброса создаем заново таймер и необходимое число карточек
+    // after resetting we create timer and cards again
     const gameControl = document.getElementById('game-control');
     timerDisplay = createTimerItem();
     gameControl.append(timerDisplay);
     createGame(vertical.value, horizontal.value);
 
-    // оставляем поля ввода чисел пустыми чтобы не стирать вручную
+    // leaving fields empty so the user won't have to empty them
     vertical.value = "";
     horizontal.value = "";
 
   };
 
-  // функция для сброса параметров игры если она уже была запущена
+  // function for resetting game parameters if the game has already started
   function resetGame() {
-    // если уже был совершен первый ход необходимо сбросить таймер и другие параметры, которые изменяются по первому клику
+    // if a first move has been made (first ever card was flipped) we need to reset the timer
+    // and other parameters that are changed on the very first card flip in the game
     if (firstMove) {
       clearInterval(timer);
       resetMove();
@@ -76,38 +77,38 @@
       foundPairs = 0;
     };
 
-    // стандартные действия вне зависимости от того был первый ход или нет
+    // standard actions no matter if the first move was made or not
     gameboard.remove();
     gameboard = null;
     timerDisplay.remove();
     timerDisplay = null;
-    cardsArray = []; // обязательно очищаем массивы с карточками
+    // empty the arrays with cards!!
+    cardsArray = [];
     frontFace = [];
   }
 
-  // пишем функцию, которая создаст карточки с учетом количества по вертикали и горизонтали
+  // function that creates cards based on what number the user provided
   function createGame(vertical, horizontal) {
     pairs = (vertical * horizontal) / 2;
     const container = document.getElementById('main-container');
-    gameboard = document.createElement('section'); //контейнер игры, внутри которого
-    //будут располагаться карточки
+    gameboard = document.createElement('section'); //game container that will hold the cards
     gameboard.classList.add('container', 'justify-content-between', 'cards-game-section');
     container.append(gameboard);
 
-    // в зависимости от того сколько карточек по горизонтали меняем свойство flex-basis,
-    // чтобы в ряду было необходимое к-во карточек
+    // change flex-basis property depending on the number of cards across
+    // so that one row has the required number of cards
     const flexBasis = Math.floor(100 / horizontal);
 
-    // массив с позициями карточек
+    // an array holding cards position
     const cardPos = [];
     for (let pos = 1; pos <= pairs * 2; pos++) {
       cardPos.push(pos);
     };
 
-    // перемешанные позиции
+    // shuffle position numbers
     const shuffledPos = shuffleCards(cardPos);
 
-    //массив с числами которые нужно добавить внутрь карточек
+    //array of numbers that will be added to the cards
     const cardNumbers = [];
     for (let num = 1; num <= pairs; num++) {
       cardNumbers.push(num);
@@ -129,7 +130,7 @@
       cardsArray.push(card);
     }
 
-    // каждой карточке присваивается позиция из пермешанного массива и добавляется слушатель
+    //each card needs a position and an event listener
     cardsArray.forEach(card => {
       gameboard.append(card);
       card.style.flexBasis = `${flexBasis}%`;
@@ -145,7 +146,7 @@
     })
   }
 
-  // функция для пермешивания позиций
+  // function for shuffling position numbers
   function shuffleCards(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const swapIndex = Math.floor(Math.random() * (i + 1));
@@ -160,7 +161,7 @@
   function flip() {
     if (firstCard && secondCard) return
 
-    if (!firstMove) { // первый ход, запускаем таймер
+    if (!firstMove) { // first move, start timer
       firstMove = true;
       seconds = 60;
       timer = setInterval(tick, 1000);
@@ -178,7 +179,7 @@
     checkMatch();
   }
 
-  // таймер
+  // how the timer works
   function tick() {
     seconds--;
     if (seconds >= 0) {
@@ -186,9 +187,9 @@
     } else {
       clearInterval(timer);
       if (foundPairs !== pairs) {
-        // если найдены не все пары а таймер закончился необходимо убрать слушатели у карточек
+        // if not all pairs are found we need to remove event listeners
         cardsArray.forEach(card => card.removeEventListener('click', flip));
-        const playAgain = confirm('Вы проиграли :(\nХотите сыграть ещё?');
+        const playAgain = confirm('You lost :(\nGive it one more try?');
         if (playAgain) {
           resetGame();
         };
@@ -196,7 +197,7 @@
     };
   };
 
-  // проверяем совпадение карточек
+  // check if the cards match
   function checkMatch() {
     let match = firstCard.lastChild.textContent === secondCard.lastChild.textContent;
     match ? freezeCards() : unflip();
@@ -206,11 +207,11 @@
     firstCard.removeEventListener('click', flip);
     secondCard.removeEventListener('click', flip);
     resetMove();
-    foundPairs++; // увеличиваем счетчик найденных пар
+    foundPairs++; // increase the counter of found pairs
     if (foundPairs === pairs) {
-      clearInterval(timer); // если все пары найдены останавливаем таймер
+      clearInterval(timer); // stop timer if all pairs are found
       setTimeout(() => {
-        const playAgain = confirm('Поздравляем! Вы нашли все пары. Сыграть ещё раз?');
+        const playAgain = confirm('Congratulations! You found all pairs. Play again?');
         if (playAgain) {
           resetGame();
         }
@@ -218,14 +219,14 @@
     }
   }
 
-  // сбрасываем значения 1 и 2 карточек, чтобы при следующем ходе записать в них новые значения
+  // reset first and second cards values to add new values on next move
   function resetMove() {
     firstCard = null;
     secondCard = null;
     flipped = false;
   }
 
-  // переворачиваем карточки обратно если не совпадают
+  // unflip cards if they don't match
   function unflip() {
     setTimeout(() => {
       firstCard.classList.remove('flip');

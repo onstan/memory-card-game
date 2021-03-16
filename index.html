@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="eng">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-  <title>Игра в "пары"</title>
+  <title>"Pairs" game</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -18,12 +18,12 @@
     <section id="game-control" class="d-flex flex-column">
       <form class="d-flex flex-column">
         <div class="form-group">
-          <label>Количество карт по вертикали (чётное число от 2 до 10)</label>
+          <label>Number of cards in a column (even number between 2 and 10)</label>
           <input class="form-control" type="number" id="vertical-number" max="10" min="2">
-          <label>Количество карт по горизонтали (чётное число от 2 до 10)</label>
-          <input class="form-control" type="number" id="horizontal-number">
+          <label>Number of cards in a row (even number between 2 and 10)</label>
+          <input class="form-control" type="number" id="horizontal-number" max="10" min="2">
         </div>
-        <button id="start-btn" type="submit" class="btn btn-primary">Сыграть!</button>
+        <button id="start-btn" type="submit" class="btn btn-primary">Play!</button>
       </form>
     </section>
   </div>
